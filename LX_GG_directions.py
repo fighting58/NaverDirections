@@ -82,25 +82,39 @@ def do_geocoding(sheetnames: list) -> dict:
 
 
 def calc_distancetime():
+    wb = openpyxl.load_workbook(worker_file)  # 직원 명부 엑셀파일 로드
+    ws = wb['출퇴근거리']
+    worker_ws = wb['직원정보']
+    worker_ws.cell(1, ws.max_column+2).value = "작성여부"
+    wb.save(worker_geocode)
+
     worker_df = pd.read_excel(worker_geocode, sheet_name='직원정보', dtype={'사번':str})  # 직원정보를 dataframe으로 가져옴
     jisa_df = pd.read_excel(worker_geocode, sheet_name='지사정보')  # 지사정보를 dataframe으로 가져옴
 
-    wb = openpyxl.load_workbook(worker_file)  # 직원 명부 엑셀파일 로드
-    ws = wb['출퇴근거리']
-
     # 직원 - 지사간 거리 작성
     for i in range(len(worker_df)):
-        start = worker_df.iloc[i, 4], worker_df.iloc[i, 5]
-        worker_info = [v for v in worker_df.iloc[i, 0:2].values]
-        for j in range(len(jisa_df)):
-            goal = jisa_df.iloc[j, 2], jisa_df.iloc[j, 3]
-            jisa_name = jisa_df.iloc[j, 0]
-            dist_time = get_optimal_route(start, goal)
-            results = worker_info + [jisa_name] + [v for v in dist_time.values()]
-            ws.append(results)
-            printProgressBar(i * len(jisa_df) + j + 1, len(worker_df) * len(jisa_df), prefix=worker_info[1])
-    wb.save(worker_file)
-    wb.close()
+        checked = worker_df.iloc[i, 6]
+        if checked == 'O':
+            continue
+        try:
+            start = worker_df.iloc[i, 4], worker_df.iloc[i, 5]
+            worker_info = [v for v in worker_df.iloc[i, 0:2].values]
+            for j in range(len(jisa_df)):
+                goal = jisa_df.iloc[j, 2], jisa_df.iloc[j, 3]
+                jisa_name = jisa_df.iloc[j, 0]
+                dist_time = get_optimal_route(start, goal)
+                results = worker_info + [jisa_name] + [v for v in dist_time.values()]
+                ws.append(results)
+                if dist_time['total_duration'] != "Error":
+                    worker_ws.cell(i+2, ws.max_column+2).value = "O"
+
+                printProgressBar(i * len(jisa_df) + j + 1, len(worker_df) * len(jisa_df), prefix=worker_info[1])
+        except Exception as e:
+            print(e)
+        
+        finally:
+            wb.save(worker_geocode)
+            wb.close()
 
 if __name__ == '__main__':
     worker_file = '직원명부.xlsx'  #직원 명부 파일 
@@ -111,9 +125,9 @@ if __name__ == '__main__':
         # 2차, 3차 실행시 좌표변환 결과가 존재하면 건너띄기 위함
         worker_file = worker_geocode
 
-    # results = do_geocoding(['직원정보', '지사정보'])
-    # print('\n',"=" * 22, '지오코딩 결과', "=" * 22 )
-    # for result in results['error']:
-    #     print(result)
+    results = do_geocoding(['직원정보', '지사정보'])
+    print('\n',"=" * 22, '지오코딩 결과', "=" * 22 )
+    for result in results['error']:
+        print(result)
 
     calc_distancetime()

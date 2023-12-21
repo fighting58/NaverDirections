@@ -4,6 +4,7 @@ import json
 import urllib
 from urllib.request import Request, urlopen
 from geocode import get_location
+import pandas as pd
 
 # *-- Directions 5 활용 코드 --*
 
@@ -56,9 +57,9 @@ def get_optimal_route(start_pos: list, goal_pos: list, waypoints: list = [], opt
     waypoints_str = waypoints2string(waypoints)
     error_message = ""
 
-    if not start_pos:
+    if pd.isna([start_pos]).any():
         error_message += "START, "
-    if not goal_pos:
+    if pd.isna([goal_pos]).any():
         error_message += "GOAL"
 
     if error_message: 

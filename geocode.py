@@ -5,12 +5,12 @@ import json
 import urllib
 from urllib.request import Request, urlopen
 
+
 # 주소에 geocoding 적용하는 함수를 작성.
 def get_location(loc) :
     client_id = AccessID
     client_secret = SecretKey
-    url = f"https://naveropenapi.apigw.ntruss.com/map-geocode/v2/geocode?query=" \
-    			+ urllib.parse.quote(loc)
+    url = f"https://naveropenapi.apigw.ntruss.com/map-geocode/v2/geocode?query=" + urllib.parse.quote(loc)
     
     # 주소 변환
     request = urllib.request.Request(url)
@@ -31,11 +31,9 @@ def get_location(loc) :
             lon = response_body['addresses'][0]['x']
             return (lon, lat)
         else :
-            print('location not exist')
-            return
+            return None, None
     else :
-        print('ERROR')
-        return
+        return None, None
         
 if __name__ == '__main__':
 

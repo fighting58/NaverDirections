@@ -3,8 +3,8 @@ from api_key import AccessID, SecretKey
 # *-- Geocoding 활용 코드 --*
 import json
 import urllib
-from urllib.request import Request, urlopen
-
+import urllib.parse
+import urllib.request
 
 # 주소에 geocoding 적용하는 함수를 작성.
 def get_location(loc) :
@@ -17,7 +17,7 @@ def get_location(loc) :
     request.add_header('X-NCP-APIGW-API-KEY-ID', client_id)
     request.add_header('X-NCP-APIGW-API-KEY', client_secret)
     
-    response = urlopen(request)
+    response = urllib.request.urlopen(request)
     res = response.getcode()
     
     if (res == 200) : # 응답이 정상적으로 완료되면 200을 return한다
@@ -31,9 +31,9 @@ def get_location(loc) :
             lon = response_body['addresses'][0]['x']
             return (lon, lat)
         else :
-            return None, None
+            return 'NA', 'NA'  # 리턴값 없음
     else :
-        return None, None
+        return "COM", "COM"   # 통신에러
         
 if __name__ == '__main__':
 

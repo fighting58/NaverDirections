@@ -74,7 +74,7 @@ def do_geocoding(sheetnames: list) -> dict:
             ws.cell(i, max_col-1).value = lon
             ws.cell(i, max_col).value = lat
 
-            printProgressBar(i-1, max_row-1)
+            # printProgressBar(i-1, max_row-1)
     
     wb.save(worker_geocode)
     wb.close()

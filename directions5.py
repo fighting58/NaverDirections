@@ -2,9 +2,7 @@ from api_key import AccessID, SecretKey
 
 import json
 import urllib
-from urllib.request import Request, urlopen
 from geocode import get_location
-import pandas as pd
 
 # *-- Directions 5 활용 코드 --*
 
@@ -56,14 +54,14 @@ def get_optimal_route(start_pos: list, goal_pos: list, waypoints: list = [], opt
     # start=/goal=/(waypoint=)/(option=) 순으로 request parameter 지정
     waypoints_str = waypoints2string(waypoints)
     error_message = ""
-
-    if pd.isna([start_pos]).any():
+    error_locations = ["COM", "NA"]  # 지오코딩에서 리턴값 없거나 통신 에러메시지
+    if start_pos in error_locations:
         error_message += "START, "
-    if pd.isna([goal_pos]).any():
+    if goal_pos in error_locations:
         error_message += "GOAL"
 
     if error_message: 
-        return {'total_distance' : f'좌표변환 에러: {error_message.rstrip(", ")}',
+        return {'total_distance' : f'좌표 에러: {error_message.rstrip(", ")}',
                 'total_duration' : "Error"}
 
     else:

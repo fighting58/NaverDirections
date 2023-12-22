@@ -31,7 +31,7 @@ def get_location(loc) :
             lon = response_body['addresses'][0]['x']
             return (lon, lat)
         else :
-            return 'NA', 'NA'  # 리턴값 없음
+            return 'N_A', 'N_A'  # 리턴값 없음
     else :
         return "COM", "COM"   # 통신에러
         

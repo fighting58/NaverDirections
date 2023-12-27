@@ -7,7 +7,6 @@ import os
 import pandas as pd
 from openpyxl import load_workbook
 import numpy as np
-import time
 
 form_class = uic.loadUiType('UI\main.ui')[0]
 
@@ -123,7 +122,6 @@ class Ui_Form(QWidget, form_class):
 
         # 자택-지사간 거리/시간 조회
         self.signals.messege_added.emit('자택-지사간 거리/시간을 조회합니다')
-        start_time = time.time()
         for i in range(len(matching_df)):
 
             # 기 조회된 값이 있으면 패스(기록된 값이 숫자로 된 값이 아닐 경우)
@@ -146,7 +144,6 @@ class Ui_Form(QWidget, form_class):
             matching_df.loc[i, "시간"] = d_t["total_duration"]
 
             self.signals.progress_changed.emit(i+1, len(matching_df))
-        print(f'{time.time()-start_time}')
 
         self.signals.messege_added.emit('매칭 테이블을 업데이트합니다')
         with pd.ExcelWriter(self.work_geocode, engine='openpyxl', mode="a", if_sheet_exists='replace')  as writer:            
